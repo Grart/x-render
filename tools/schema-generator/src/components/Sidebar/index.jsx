@@ -8,7 +8,6 @@ const Sidebar = props => {
   const { userProps = {} } = useStore();
   const { settings } = userProps;
   const _settings = Array.isArray(settings) ? settings : defaultSettings;
-
   return (
     <div className="left-layout w5-l w4">
       {Array.isArray(_settings) ? (

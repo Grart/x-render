@@ -1,10 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import FormRender, { useForm } from 'form-render';
 import { flattenToData, dataToFlatten } from '../../../utils';
 import { useStore } from '../../../hooks';
 import RenderChildren from './RenderChildren';
 import RenderField from './RenderField';
 import Wrapper from './Wrapper';
+
+import deepClone from 'clone';
+import ReactDom from 'react-dom';
+import { Menu  } from 'antd';
+const { SubMenu } = Menu;
 
 const PreviewFR = ({ schema }) => {
   const form = useForm();
@@ -30,8 +35,166 @@ const PreviewFR = ({ schema }) => {
   );
 };
 
+var PropMnuIsMount=false;
+
+import { defaultSettings } from '../../../settings';
+
 const FR = ({ id = '#', preview, displaySchema }) => {
-  const { flatten, frProps = {} } = useStore();
+  const store=useStore();
+  const { flatten, frProps = {},selected ,userProps} = store;
+  
+  const { settings } = userProps;
+
+  const storeRef=useRef();
+  storeRef.current=store;
+  
+  const divRef=useRef();
+  
+  const selectedRef=useRef(selected);
+  selectedRef.current=selected;
+  
+  if(divRef.current&&divRef.current.style){
+    divRef.current.style.display='none';
+  }
+
+  useEffect(
+    ()=>{
+      if(PropMnuIsMount){
+        return;
+      }
+      PropMnuIsMount=true;
+
+      console.log('componentDidMount');
+      const popup= document.createElement("div");
+      document.body.append(popup);
+      
+      const _settings = Array.isArray(settings) ? settings : defaultSettings;
+      
+     
+
+      ReactDom.render(
+        <div ref={divRef} style={{display:"none",position:"absolute",'zIndex':999}}>
+          <Menu
+            style={{ width: 256 }}
+            defaultSelectedKeys={['1']}
+            onClick={handleMenuClick}
+          >
+            {
+              Array.isArray(_settings)
+              ?(
+                _settings.map((item, idx1) => {
+                  if (item && item.show === false) {
+                    return null;
+                  }
+                  
+                  return (
+                    <SubMenu key={idx1} title={item.title}>
+                      {
+                        Array.isArray(item.widgets) 
+                        ? (
+                          item.widgets.map((widget, idx2) => {
+                            return (
+                              <Menu.Item key={`${idx1}.${idx2}`}>
+                                {widget.text}
+                              </Menu.Item>
+                            );
+                          })
+                        ) 
+                        :(
+                          <div>此处配置有误</div>
+                        )
+                      }
+                    </SubMenu>
+        
+                    );
+                })
+              )
+              :(
+                <div>配置错误：Setting不是数组</div>
+              )
+              
+            }
+          </Menu>
+        </div>,
+        popup
+      );
+      
+      
+      
+      return ()=>{
+        console.log('componentWillUnmount');
+        ReactDom.unmountComponentAtNode(popup);
+        document.body.removeChild(popup);
+        PropMnuIsMount=false;
+      }
+      
+    },
+    []
+  );
+
+  const handleMenuClick=useCallback(
+    e=>{
+      // console.log(e,selectedRef.current);//preventDefault()阻止默认事件（这里阻止了默认菜单）
+      const _key=e.key;
+      const selectId=selectedRef.current;
+      const _settings = Array.isArray(settings) ? settings : defaultSettings;
+      if(
+        _key
+        &&selectId
+        &&'#'!=selectId
+      )
+      {
+        const _indexAry=`${_key}`.split('.');
+        if(2==_indexAry.length){
+          const _widget=_settings[_indexAry[0]].widgets[_indexAry[1]];
+          const newFlatten = { ...storeRef.current.flatten };
+          const _item=newFlatten[selectId];
+          _item.schema={ 
+            ..._widget.schema,
+             $id: selectId,
+             title:_item.schema.title, 
+             children:_item.schema.children
+           };
+          
+          storeRef.current.onFlattenChange(newFlatten);
+        }
+      }
+
+      const propDiv=divRef.current;
+      if(propDiv&&propDiv.style){
+        propDiv.style.display='none';
+      }
+    }
+  );
+  
+  const handleContextMenu=useCallback(
+    e=>{
+      e.preventDefault();//preventDefault()阻止默认事件（这里阻止了默认菜单）
+      if(
+        selectedRef.current
+        &&'#'!=selectedRef.current
+      ){
+        const propDiv=divRef.current;
+        if(propDiv&&propDiv.style){
+          propDiv.style.display='block';//点击右键菜单显示出来
+          
+          // console.log(
+          //   'contextmenu',
+          //   divRef.current,
+          //   e.pageX,
+          //   wrapDiv.clientLeft,
+          //   e.pageY,
+          //   wrapDiv.clientTop
+          // );
+          
+          let X=e.pageX;// wrapDiv.offsetLeft;
+          let Y=e.pageY;// wrapDiv.offsetTop;
+          propDiv.style.left=X+'px';
+          propDiv.style.top=Y+'px';
+        }
+      }
+    }
+  );
 
   if (preview) {
     return <PreviewFR schema={displaySchema} />;
@@ -137,7 +300,7 @@ const FR = ({ id = '#', preview, displaySchema }) => {
   }
 
   return (
-    <Wrapper style={columnStyle} $id={id} item={item}>
+    <Wrapper style={columnStyle} $id={id} item={item} onContextMenu={handleContextMenu}>
       <div className={containerClass}>
         <RenderField {...fieldProps}>
           {(isObj || isList) && (
@@ -152,3 +315,22 @@ const FR = ({ id = '#', preview, displaySchema }) => {
 };
 
 export default FR;
+
+
+// const WrapperMenu =props=>{
+//   useEffect(
+//     ()=>{
+//       console.log('componentDidMount');
+//       const popup= document.createElement("div");
+//       document.body.append(popup);
+//       ReactDom.render(props.children, popup);
+//       return ()=>{
+//         console.log('componentWillUnmount');
+//         ReactDom.unmountComponentAtNode(popup);
+//         document.body.removeChild(popup);
+//       }
+//     },
+//     []
+//   )
+//   return <></>
+// }

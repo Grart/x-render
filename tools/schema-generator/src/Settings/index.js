@@ -53,14 +53,6 @@ export const defaultCommonSettings = {
     title: 'Bind',
     type: 'string',
   },
-  min: {
-    title: '最小值',
-    type: 'number',
-  },
-  max: {
-    title: '最大值',
-    type: 'number',
-  },
   disabled: {
     title: '禁用',
     type: 'boolean',
@@ -214,7 +206,16 @@ export const elements = [
       title: '数字输入框',
       type: 'number',
     },
-    setting: {},
+    setting: {
+      min: {
+        title: '最小值',
+        type: 'number',
+      },
+      max: {
+        title: '最大值',
+        type: 'number',
+      },
+    },
   },
   {
     text: '是否选择',
@@ -423,7 +424,16 @@ export const advancedElements = [
       type: 'number',
       widget: 'slider',
     },
-    setting: {},
+    setting: {
+      min: {
+        title: '最小值',
+        type: 'number',
+      },
+      max: {
+        title: '最大值',
+        type: 'number',
+      },
+    },
   },
   {
     text: '图片展示',

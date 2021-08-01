@@ -16,6 +16,7 @@ export default function Wrapper({
   inside = false,
   children,
   style,
+  onContextMenu
 }) {
   const [position, setPosition] = useState();
   const {
@@ -222,6 +223,7 @@ export default function Wrapper({
   const { length: _numOfBtns } = _showDefaultBtns
     .concat(_extraBtns)
     .filter(Boolean);
+  
 
   return (
     <div
@@ -229,6 +231,7 @@ export default function Wrapper({
       style={overwriteStyle}
       className="field-wrapper relative w-100"
       onClick={handleClick}
+      onContextMenu={onContextMenu}
     >
       {children}
 

@@ -286,6 +286,7 @@ export function idToSchema(flatten, id = '#', final = false) {
 
 export const copyItem = (flatten, $id) => {
   let newFlatten = { ...flatten };
+  console.log(newFlatten);
   try {
     const item = flatten[$id];
     const newId = $id + nanoid(6);
