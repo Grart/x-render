@@ -103,6 +103,7 @@ const CoreRender = ({
   const isList = isListType(schema);
   const isObj = isObjType(schema);
   const isComplex = isObj || isList;
+  const columnWeight = (schema.columnWeight || '').toUpperCase();
   const isCheckBox = isCheckBoxType(schema, readOnly);
   const width = schema.width || schema['ui:width'];
   let containerClass = `fr-field ${
@@ -176,17 +177,26 @@ const CoreRender = ({
 
   // style part
   let columnStyle = {};
-  if (!isObj) {
+  if (
+    !isObj
+    && "FULL" !== columnWeight
+    ) {
     if (width) {
       columnStyle = {
         width,
         paddingRight: '12px',
       };
     } else if (column > 1) {
-      columnStyle = {
-        width: `calc(100% /${column})`,
-        paddingRight: '12px',
-      };
+      let _columnWeight = parseInt(columnWeight);
+      _columnWeight = (isNaN(_columnWeight) ? 1 : _columnWeight);
+      _columnWeight = _columnWeight > column ? 1 : (column / _columnWeight);
+      if (1 !== _columnWeight)
+      {
+        columnStyle = {
+          width: `calc(100% /${_columnWeight})`,
+          paddingRight: '12px',
+        };
+      }
     }
   }
 

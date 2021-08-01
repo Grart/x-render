@@ -49,12 +49,15 @@ npm i form-render --save
  * defaultShowCode: true
  */
 import React from 'react';
-import { Button } from 'antd';
+import { Button ,Table} from 'antd';
 import FormRender, { connectForm } from 'form-render';
 // import 'antd/dist/antd.css';    如果项目没有对antd、less做任何配置的话，需要加上
 
 const schema = {
   type: 'object',
+  "column": 3,
+  "labelWidth": 100,
+  "displayType": "row",
   properties: {
     input1: {
       title: '简单输入框',
@@ -67,6 +70,55 @@ const schema = {
       enum: ['a', 'b', 'c'],
       enumNames: ['早', '中', '晚'],
     },
+    select2: {
+      title: '单选',
+      type: 'string',
+      enum: ['a', 'b', 'c'],
+      enumNames: ['早', '中', '晚'],
+    },
+    "object_abJRh4": {
+      "columnWeight":"3",
+      "title": "明细表",
+      "type": "array",
+      "widget": "table",
+      "fields": [
+        {
+          "id": "86",
+          "name": "A",
+          "dataType": "Text",
+          "description": "A"
+        },
+        {
+          "id": "82",
+          "name": "B",
+          "dataType": "Text",
+          "description": "B"
+        },
+        {
+          "id": "9",
+          "name": "C",
+          "dataType": "Text",
+          "description": "C"
+        },
+        {
+          "id": "14",
+          "name": "D",
+          "dataType": "Text",
+          "description": "D"
+        },
+        {
+          "id": "76",
+          "name": "EE",
+          "dataType": "Text",
+          "description": "EE"
+        }
+      ],
+      "properties": {},
+      "items": {
+        "type": "object",
+        "properties": {}
+      }
+    }
   },
 };
 
@@ -75,7 +127,8 @@ class Demo extends React.Component {
     const { form } = this.props;
     return (
       <div>
-        <FormRender form={form} schema={schema} />
+        <FormRender form={form} schema={schema}
+        widgets={_widgets} />
         <Button type="primary" onClick={form.submit}>
           提交
         </Button>
@@ -85,6 +138,55 @@ class Demo extends React.Component {
 }
 
 export default connectForm(Demo);
+
+
+
+const _widgets = {
+  'table': function (props) {
+    const { schema, onChange, value } = props;
+
+
+    const dataSource = [
+      {
+        key: '1',
+        name: '胡彦斌',
+        age: 32,
+        address: '西湖区湖底公园1号',
+      },
+      {
+        key: '2',
+        name: '胡彦祖',
+        age: 42,
+        address: '西湖区湖底公园1号',
+      },
+    ];
+
+    const columns = [
+      {
+        title: '姓名',
+        dataIndex: 'name',
+        key: 'name',
+      },
+      {
+        title: '年龄',
+        dataIndex: 'age',
+        key: 'age',
+      },
+      {
+        title: '住址',
+        dataIndex: 'address',
+        key: 'address',
+      },
+    ];
+
+
+    return (
+      <Table dataSource={dataSource} columns={columns} />
+    );
+  }
+}
+
+
 ```
 
 **对于函数组件，FormRender 提供了 `useForm` hooks, 书写更为灵活**

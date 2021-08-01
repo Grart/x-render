@@ -1,10 +1,132 @@
 import React from 'react';
 import FormRender, { useForm } from 'form-render';
+import Table from 'antd'
 
 const delay = ms => new Promise(res => setTimeout(res, ms));
-
+const d = {
+  "type": "object",
+  "ui:displayType": "row",
+  "ui:showDescIcon": true,
+  "ui:column": 3,
+  "required": [
+    "input1"
+  ],
+  "column": 3,
+  "labelWidth": 100,
+  "displayType": "row",
+  "properties": {
+    "input_ihbTAw": {
+      "title": "采购单号",
+      "type": "string",
+      "props": {}
+    },
+    "input_WQoPfx": {
+      "title": "采购时间",
+      "type": "string",
+      "format": "date"
+    },
+    "object_B1L4BB": {
+      "title": "供应商",
+      "type": "number",
+      "properties": {},
+      "widget": "refinput",
+      "dataSource": {
+        "dataSourceName": "供应商",
+        "displayFieldName": "input_m-YQYJ"
+      }
+    },
+    "switch_ZnyHq4": {
+      "title": "已入库",
+      "type": "boolean",
+      "widget": "switch"
+    },
+    "input_NoVF5r": {
+      "title": "入库仓位",
+      "type": "number",
+      "properties": {},
+      "widget": "refinput",
+      "dataSource": {
+        "dataSourceName": "仓库",
+        "displayFieldName": "input_NA2gOr"
+      }
+    },
+    "object_luA7cV": {
+      "title": "仓位编码",
+      "type": "string",
+      "properties": {},
+      "widget": "refmapping",
+      "dataSource": {
+        "dataSourceName": "仓库",
+        "displayFieldName": "input_382nxS"
+      }
+    },
+    "input_J2yDey": {
+      "title": "入库时间",
+      "type": "string",
+      "props": {}
+    },
+    "input_wckZef": {
+      "title": "制单时间",
+      "type": "string",
+      "props": {}
+    },
+    "input_YYEXOB": {
+      "title": "制单人",
+      "type": "string",
+      "props": {},
+      "required": false,
+      "placeholder": "",
+      "readOnlyWidget": ""
+    },
+    "object_abJRh4": {
+      "title": "明细表",
+      "type": "array",
+      "widget": "table",
+      "fields": [
+        {
+          "id": "86",
+          "name": "A",
+          "dataType": "Text",
+          "description": "A"
+        },
+        {
+          "id": "82",
+          "name": "B",
+          "dataType": "Text",
+          "description": "B"
+        },
+        {
+          "id": "9",
+          "name": "C",
+          "dataType": "Text",
+          "description": "C"
+        },
+        {
+          "id": "14",
+          "name": "D",
+          "dataType": "Text",
+          "description": "D"
+        },
+        {
+          "id": "76",
+          "name": "EE",
+          "dataType": "Text",
+          "description": "EE"
+        }
+      ],
+      "properties": {},
+      "items": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  }
+}
 const schema = {
   type: 'object',
+  "column": 3,
+  "labelWidth": 100,
+  "displayType": "row",
   properties: {
     range1: {
       bind: ['startDate', 'endDate'],
@@ -40,6 +162,48 @@ const schema = {
         },
       },
     },
+    "object_abJRh4": {
+      "title": "明细表",
+      "type": "array",
+      "widget": "table",
+      "fields": [
+        {
+          "id": "86",
+          "name": "A",
+          "dataType": "Text",
+          "description": "A"
+        },
+        {
+          "id": "82",
+          "name": "B",
+          "dataType": "Text",
+          "description": "B"
+        },
+        {
+          "id": "9",
+          "name": "C",
+          "dataType": "Text",
+          "description": "C"
+        },
+        {
+          "id": "14",
+          "name": "D",
+          "dataType": "Text",
+          "description": "D"
+        },
+        {
+          "id": "76",
+          "name": "EE",
+          "dataType": "Text",
+          "description": "EE"
+        }
+      ],
+      "properties": {},
+      "items": {
+        "type": "object",
+        "properties": {}
+      }
+    }
   },
 };
 
@@ -92,9 +256,58 @@ const Demo = () => {
         beforeFinish={beforeFinish}
         onFinish={onFinish} // 如果beforeFinish返回一个promise，onFinish会等promise resolve之后执行
         debug={true}
+        widgets={_widgets}
       />
     </div>
   );
 };
 
 export default Demo;
+
+
+
+
+const _widgets = {
+  'table': function (props) {
+    const { schema, onChange, value } = props;
+
+
+    const dataSource = [
+      {
+        key: '1',
+        name: '胡彦斌',
+        age: 32,
+        address: '西湖区湖底公园1号',
+      },
+      {
+        key: '2',
+        name: '胡彦祖',
+        age: 42,
+        address: '西湖区湖底公园1号',
+      },
+    ];
+
+    const columns = [
+      {
+        title: '姓名',
+        dataIndex: 'name',
+        key: 'name',
+      },
+      {
+        title: '年龄',
+        dataIndex: 'age',
+        key: 'age',
+      },
+      {
+        title: '住址',
+        dataIndex: 'address',
+        key: 'address',
+      },
+    ];
+
+
+    return (
+      <Table dataSource={dataSource} columns={columns} />
+    );
+  }
+}

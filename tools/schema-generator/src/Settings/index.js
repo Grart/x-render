@@ -84,6 +84,11 @@ export const defaultCommonSettings = {
       hideNumber: true,
     },
   },
+  columnWeight: {
+    title: '行占比',
+    type: 'string'
+
+  }
 };
 
 // widget 用于指定 schema 右侧配置对应的 setting
